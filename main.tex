@@ -44,10 +44,10 @@ Question: The graph $G = (\Lang{\Forb}, \delta)$ is strongly connected.
 Given $k \in \PosInt$, we define $\delta_k$ {\it the k-Hamming neighborhood} as follows:
 $$\forall w \in \Lang{\Forb},  \delta_k(w) = \{w'\in \mathcal{L}_{\Forb} \mid \Hamming{w}{w'}\le k\}. $$
 With $k = n$, any $w \in \Lang{\Forb}$ can be changed into any other $w' \in \Lang{\Forb}$ in one step. Hence $G = (\Lang{\Forb}, \delta_n)$ is always strongly connected. \\
-Hence with the $k$-Hamming neighborhood a variant of the general problem can be considered: \\
+Thus with the $k$-Hamming neighborhood a variant of the general problem can be considered: \\
 \newline
 Input: $\Forb$ a set of forbidden motifs \\
-Question: minimal $k \in \PosInt$ such that the graph $G = (\Lang{\Forb}, \delta_k)$ is strongly connected.
+Question: the minimal $k \in \PosInt$ such that the graph $G = (\Lang{\Forb}, \delta_k)$ is strongly connected.
 
 
 \subsubsection{One motif}
@@ -59,16 +59,16 @@ Then $k = 1$ is sufficient to guarantee strong connectivity.
 \end{result}
 \begin{proof}
 	Let $w$ and $w'$ be two words in $\Lang{\{f\}}$ (of length $n$). \\
-	As $f \neq \epsilon$, it can be written letter by letter as follows: $f = f_1 ... f_{|f|}$. \\
+	As $f \neq \epsilon$, $f$ can be written letter by letter as follows: $f = f_1 ... f_{|f|}$. \\
 	Since $|\Sigma| \geq 2$, let $a \in \Sigma$ such that $a \neq f_1$. \\
 	We show that there is a path from $w$ to $a^n$. \\
-	To do so, from left to right we will replace each letter in $w$ by $a$ (or keep it the same if already an $a$). \\
+	To do so, from left to right we replace each letter in $w$ by $a$ (or keep it the same if already an $a$). \\
 	Formally, from $w = w_1 ... w_n$ we define the sequence $(u_i)_{0 \leq i \leq n}$ of intermediate words:
 	$$ \forall 0 \leq i \leq n, u_i = a^i w_{i+1} ... w_n.$$
 	Then:
 	\begin{itemize}
 		\item $\forall 0 \leq i \leq n - 1, H(u_i, u_{i+1}) \leq 1,$
-		\item for every $i$ in $[1..n]$ we must prove that $u_i$ is in $\Lang{\{f\}}$. By contradiction, suppose that $f$ appears in a $u_i$. Let $j$ the position in $u_i$ of the leftmost letter of this occurrence of $f$.
+		\item for every $i$ in $[1..n]$ we must prove that $u_i$ is in $\Lang{\{f\}}$. By contradiction, suppose that $f$ appears in a $u_i$. Let $j$ be the position in $u_i$ of the leftmost letter of this occurrence of $f$.
 		\begin{itemize}
 			\item if $j \leq i:$ then the leftmost letter of $f$ would be $a$, which is not by definition of $a$.
 			\item if $j > i:$ then this occurrence of $f$ would be a factor of $w$, which it cannot be since $w \in \Lang{\{f\}}.$
@@ -80,8 +80,14 @@ Then $k = 1$ is sufficient to guarantee strong connectivity.
 	Finally, since $\delta_1$ is symmetric this gives a path from $w$ to $w'$ and vice-versa.	
 \end{proof}
 
-In addition to show that $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected, this proof gives $2n$ as an upper bound to the diameter of $G$.
+In addition to show that $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected, this proof gives us $2n$ as an upper bound to the diameter of $G$.
 
+We could have tried to prove Result 1 by induction on $H(w,w')$ instead. But it is unclear to what extent such an induction would be feasible (at least for now). Consider the following example with $\Sigma = \{A,U\}:$
+$$ \Forb = \{AUA\}, u=AAAA, v=AUUA.$$
+There is no way to replace one non-extremal $A$ of $u$ with $U$ without getting an occurrence of $AUA$. Hence there is no path from $u$ to $v$ in $G$ with decreasing Hamming distance, even though $u$ and $v$ are connected according to Result 1. The same idea gives counter-examples of arbitrary Hamming distance:
+$$\forall i \in \PosInt, i \geq 2, with: \Forb = \{AUA\}, u_i=A^{i+2}, v_i=A U^i A,$$
+$$then: H(u_i,v_i) = i.$$
+These examples heavily rely on the fact that $|\Sigma|=2$. There might be a way to get around this issue when $|\Sigma| \geq 3$ and find paths with non-increasing Hamming distance, but this would have to be looked at.
 
 
 \end{document}
