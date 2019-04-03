@@ -89,5 +89,15 @@ $$\forall i \in \PosInt, i \geq 2, with: \Forb = \{AUA\}, u_i=A^{i+2}, v_i=A U^i
 $$then: H(u_i,v_i) = i.$$
 These examples heavily rely on the fact that $|\Sigma|=2$. There might be a way to get around this issue when $|\Sigma| \geq 3$ and find paths with non-increasing Hamming distance, but this would have to be looked at.
 
+\subsubsection{Two or more motifs}
+
+The idea from the proof of Result 1 could be used again to treat the cases when there is an available letter to do the same trick.
+\begin{result}
+	Let $F = \{f_1,...,f_k\}$ be the set of forbidden motifs.
+	\begin{itemize}
+		\item If there exists $a \in \Sigma$ that is the first letter of no $f_i$, then $G = (\Lang{\Forb}, \delta_1)$ is strongly connected.
+		\item Same result if there exists $a \in \Sigma$ that is the last letter of no $f_i$.
+	\end{itemize},
+\end{result}
 
 \end{document}
