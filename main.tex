@@ -1,0 +1,87 @@
+\documentclass{article}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\title{Design-Connectivity-Maher-2019}
+\author{Maher \and Yann \and Alain}
+\date{April 2019}
+
+\begin{document}
+
+\maketitle
+
+\newtheorem{result}{Result}
+
+\newcommand{\PosInt}{\mathbb{N}^*}
+\newcommand{\Forb}{\mathcal{F}}
+\newcommand{\Lang}[1]{\mathcal{L}_{#1}}
+\newcommand{\Hamming}[2]{H(#1,#2)}
+
+
+
+\section{Introduction}
+{\it A faire par Maher}
+
+\subsection*{Definitions}
+
+Let $n \in \PosInt$. \\
+Let $\Sigma$ be an alphabet, $|\Sigma| \geq 2$. (We are especially interested in the case $\Sigma = \{A, U, G, C\}$). \\
+Let $\Forb$ be the set of forbidden motifs. \\
+Let $\Lang{\Forb}$ be the set of words in $\Sigma^n$ that do not contain any motif in $\Forb$. \\
+Let $H(w,w')$ be the Hamming distance between two words $w$, $w'$ in $\Sigma^n$.
+
+\subsection*{General problem}
+
+Input: $\Forb$ a set of forbidden motifs, $\delta: \Lang{\Forb} \rightarrow \Lang{\Forb}$ a neighborhood function on $\Lang{\Forb}$ \\
+Question: The graph $G = (\Lang{\Forb}, \delta)$ is strongly connected.
+
+\section{Results}
+\subsection{With the $k$-Hamming neighborhood}
+
+Given $k \in \PosInt$, we define $\delta_k$ {\it the k-Hamming neighborhood} as follows:
+$$\forall w \in \Lang{\Forb},  \delta_k(w) = \{w'\in \mathcal{L}_{\Forb} \mid \Hamming{w}{w'}\le k\}. $$
+With $k = n$, any $w \in \Lang{\Forb}$ can be changed into any other $w' \in \Lang{\Forb}$ in one step. Hence $G = (\Lang{\Forb}, \delta_n)$ is always strongly connected. \\
+Hence with the $k$-Hamming neighborhood a variant of the general problem can be considered: \\
+\newline
+Input: $\Forb$ a set of forbidden motifs \\
+Question: minimal $k \in \PosInt$ such that the graph $G = (\Lang{\Forb}, \delta_k)$ is strongly connected.
+
+
+\subsubsection{One motif}
+
+Consider the case where $\Forb$ contains a single motif: $\Forb = \{f\}$. \\
+Then $k = 1$ is sufficient to guarantee strong connectivity.
+\begin{result}
+	$\forall f \in \Sigma^+$, $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected.
+\end{result}
+\begin{proof}
+	Let $w$ and $w'$ be two words in $\Lang{\{f\}}$ (of length $n$). \\
+	As $f \neq \epsilon$, it can be written letter by letter as follows: $f = f_1 ... f_{|f|}$. \\
+	Since $|\Sigma| \geq 2$, let $a \in \Sigma$ such that $a \neq f_1$. \\
+	We show that there is a path from $w$ to $a^n$. \\
+	To do so, from left to right we will replace each letter in $w$ by $a$ (or keep it the same if already an $a$). \\
+	Formally, from $w = w_1 ... w_n$ we define the sequence $(u_i)_{0 \leq i \leq n}$ of intermediate words:
+	$$ \forall 0 \leq i \leq n, u_i = a^i w_{i+1} ... w_n.$$
+	Then:
+	\begin{itemize}
+		\item $\forall 0 \leq i \leq n - 1, H(u_i, u_{i+1}) \leq 1,$
+		\item for every $i$ in $[1..n]$ we must prove that $u_i$ is in $\Lang{\{f\}}$. By contradiction, suppose that $f$ appears in a $u_i$. Let $j$ the position in $u_i$ of the leftmost letter of this occurrence of $f$.
+		\begin{itemize}
+			\item if $j \leq i:$ then the leftmost letter of $f$ would be $a$, which is not by definition of $a$.
+			\item if $j > i:$ then this occurrence of $f$ would be a factor of $w$, which it cannot be since $w \in \Lang{\{f\}}.$
+		\end{itemize}
+	Contradiction. Hence every $u_i$ is in $\Lang{\{f\}}$.
+	\end{itemize}
+	This proves that there is a path from $w$ to $a^n$ with $\delta_1$ as the neighborhood function. \\
+	The same can be done to obtain a path from $w'$ to $a^n$. \\
+	Finally, since $\delta_1$ is symmetric this gives a path from $w$ to $w'$ and vice-versa.	
+\end{proof}
+
+In addition to show that $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected, this proof gives $2n$ as an upper bound to the diameter of $G$.
+
+
+
+\end{document}
