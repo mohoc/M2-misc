@@ -13,8 +13,11 @@
 
 \maketitle
 
-\newtheorem{result}{Result}
+\newtheorem{theorem}{Theorem}
+\newtheorem{result}[theorem]{Result}
+\newtheorem{corollary}[theorem]{Corollary}
 
+\newcommand{\Nat}{\mathbb{N}}
 \newcommand{\PosInt}{\mathbb{N}^*}
 \newcommand{\Forb}{\mathcal{F}}
 \newcommand{\Lang}[1]{\mathcal{L}_{#1}}
@@ -27,7 +30,7 @@
 
 \subsection*{Definitions}
 
-Let $n \in \PosInt$. \\
+Let $n \in \Nat, n \geq 2$. \\
 Let $\Sigma$ be an alphabet, $|\Sigma| \geq 2$. (We are especially interested in the case $\Sigma = \{A, U, G, C\}$). \\
 Let $\Forb$ be the set of forbidden motifs. \\
 Let $\Lang{\Forb}$ be the set of words in $\Sigma^n$ that do not contain any motif in $\Forb$. \\
@@ -97,7 +100,19 @@ The idea from the proof of Result 1 could be used again to treat the cases when 
 	\begin{itemize}
 		\item If there exists $a \in \Sigma$ that is the first letter of no $f_i$, then $G = (\Lang{\Forb}, \delta_1)$ is strongly connected.
 		\item Same result if there exists $a \in \Sigma$ that is the last letter of no $f_i$.
-	\end{itemize},
+	\end{itemize}
 \end{result}
+\noindent
+This tells us that we need at least $|\Sigma|$ forbidden motifs to obtain a disconnected graph with $\delta_1$. Indeed if there are less than $|\Sigma|$ motifs, then we know that at least one letter is not the first letter of any forbidden motif.
+
+\begin{corollary}
+	If $|\Forb| < |\Sigma|$, then $G = (\Lang{\Forb}, \delta_1)$ is strongly connected.
+\end{corollary}
+\noindent
+An example with $|\Sigma|$ words that gives a disconnected graph with $\delta_1$ is the following:
+$$With: \Sigma = \{a_1, a_2,...,a_k\}, let: \Forb = \{a_1 a_2, a_2 a_1, a_3,...,a_k\}.$$
+Then the only two allowed words are $a_1^n$ and $a_2^n$, and there is no way to go from one word to the other.
+
+
 
 \end{document}
