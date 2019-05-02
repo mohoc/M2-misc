@@ -14,107 +14,150 @@
 \date{April 2019}
 
 \begin{document}
-	
-	\maketitle
-	
-	\newtheorem{theorem}{Theorem}
-	\newtheorem{result}[theorem]{Result}
-	\newtheorem{corollary}[theorem]{Corollary}
-	
-	\newcommand{\Nat}{\mathbb{N}}
-	\newcommand{\PosInt}{\mathbb{N}^*}
-	\newcommand{\Forb}{\mathcal{F}}
-	\newcommand{\Lang}[1]{\mathcal{L}_{#1}}
-	\newcommand{\Hamming}[2]{H(#1,#2)}
-	
-	
-	
-	\section{Introduction}
-	{\it A faire par Maher}
-	
-	\subsection*{Definitions}
-	
-	Let $n \in \Nat, n \geq 2$. \\
-	Let $\Sigma$ be an alphabet, $|\Sigma| \geq 2$. (We are especially interested in the case $\Sigma = \{A, U, G, C\}$). \\
-	Let $\Forb$ be the set of forbidden motifs. \\
-	Let $\Lang{\Forb}$ be the set of words in $\Sigma^n$ that do not contain any motif in $\Forb$. \\
-	Let $H(w,w')$ be the Hamming distance between two words $w$, $w'$ in $\Sigma^n$.
-	
-	\subsection*{General problem}
-	
-	Input: $\Forb$ a set of forbidden motifs, $\delta: \Lang{\Forb} \rightarrow \Lang{\Forb}$ a neighborhood function on $\Lang{\Forb}$ \\
-	Question: The graph $G = (\Lang{\Forb}, \delta)$ is strongly connected.
-	
-	\section{Results}
-	\subsection{With the $k$-Hamming neighborhood}
-	
-	Given $k \in \PosInt$, we define $\delta_k$ {\it the k-Hamming neighborhood} as follows:
-	$$\forall w \in \Lang{\Forb},  \delta_k(w) = \{w'\in \mathcal{L}_{\Forb} \mid \Hamming{w}{w'}\le k\}. $$
-	With $k = n$, any $w \in \Lang{\Forb}$ can be changed into any other $w' \in \Lang{\Forb}$ in one step. Hence $G = (\Lang{\Forb}, \delta_n)$ is always strongly connected. \\
-	Thus with the $k$-Hamming neighborhood a variant of the general problem can be considered: \\
-	\newline
-	Input: $\Forb$ a set of forbidden motifs \\
-	Question: the minimal $k \in \PosInt$ such that the graph $G = (\Lang{\Forb}, \delta_k)$ is strongly connected.
-	
-	
-	\subsubsection{One motif}
-	
-	Consider the case where $\Forb$ contains a single motif: $\Forb = \{f\}$. \\
-	Then $k = 1$ is sufficient to guarantee strong connectivity.
-	\begin{result}
-		$\forall f \in \Sigma^+$, $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected.
-	\end{result}
-	\begin{proof}
-		Let $w$ and $w'$ be two words in $\Lang{\{f\}}$ (of length $n$). \\
-		As $f \neq \epsilon$, $f$ can be written letter by letter as follows: $f = f_1 ... f_{|f|}$. \\
-		Since $|\Sigma| \geq 2$, let $a \in \Sigma$ such that $a \neq f_1$. \\
-		We show that there is a path from $w$ to $a^n$. \\
-		To do so, from left to right we replace each letter in $w$ by $a$ (or keep it the same if already an $a$). \\
-		Formally, from $w = w_1 ... w_n$ we define the sequence $(u_i)_{0 \leq i \leq n}$ of intermediate words:
-		$$ \forall 0 \leq i \leq n, u_i = a^i w_{i+1} ... w_n.$$
-		Then:
+
+\maketitle
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{result}[theorem]{Result}
+
+
+
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\PosInt}{\mathbb{N}^*}
+\newcommand{\Forb}{\mathcal{F}}
+\newcommand{\ForbEqv}{\widetilde{\Forb}}
+\newcommand{\Lang}[1]{\mathcal{L}_{#1}}
+\newcommand{\LFn}{\Lang{\Forb, n}}
+\newcommand{\Hamming}[2]{H(#1,#2)}
+\newcommand{\EqDef}{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+
+\section{Introduction}
+{\it A faire par Maher}
+
+\subsection*{Definitions}
+
+Let $n \in \Nat, n \geq 2$. \\
+Let $\Sigma$ be an alphabet, $|\Sigma| \geq 2$. (We are especially interested in the case $\Sigma = \{A, U, G, C\}$). \\
+Let $\Forb$ be the set of forbidden motifs. \\
+Let $\LFn$ be the set of words in $\Sigma^n$ that do not contain any motif in $\Forb$. \\
+Let $\Lang{\Forb}$ be the set of words in $\Sigma^*$ that do not contain any motif in $\Forb$. \\
+Let $H(w,w')$ be the Hamming distance between two words $w$, $w'$ in $\Sigma^n$. \\
+
+\noindent
+Let $m(\Forb)$ $\EqDef$ $max_{f in \Forb} |f|$. \\
+We assume that $n \geq m(\Forb)$. (Otherwise some forbidden motifs would never be problematic).\\
+Hence any forbidden motif $f$ in $\Forb$ of length $l < m(\Forb)$ is equivalent to the set: $\bigcup_{i=0}^{n-l} \Sigma^i f \Sigma^{n-l-i}$ of forbidden motifs, all of legnth $m(F)$. \\
+Thus we define $\ForbEqv$ the set of forbidden motifs - all of length $m(\Forb)$ - equivalent to $\Forb$. \\
+
+\noindent
+Let (TODO: de Bruijn graph)
+
+\subsection*{General problem}
+
+Input: $n \geq 2$, $\Forb$ a set of forbidden motifs, $\delta: \LFn \rightarrow \LFn$ a neighborhood function on $\LFn$ \\
+Question: The graph $G = (\LFn, \delta)$ is strongly connected.
+
+\section{Results}
+
+\subsection{With the $k$-Hamming neighborhood}
+\begin{definition}
+	Given $k \in \PosInt$, we define $\delta_k$ the k-Hamming neighborhood as follows:
+	$$\forall w \in \LFn,  \delta_k(w) = \{w'\in \mathcal{L}_{\Forb} \mid \Hamming{w}{w'}\le k\}. $$
+\end{definition}
+
+With $k = n$, any $w \in \LFn$ can be changed into any other $w' \in \LFn$ in one step. Hence $G = (\LFn, \delta_n)$ is always strongly connected. Thus with the $k$-Hamming neighborhood a variant of the general problem can be considered:
+
+\subsubsection*{General problem with the $k$-Hamming neighborhood}
+
+Input: $n \geq 2$, $\Forb$ a set of forbidden motifs \\
+Question: the minimal $k \in \PosInt$ such that the graph $G = (\LFn, \delta_k)$ is strongly connected.
+
+
+\subsubsection{One motif}
+
+Consider the case where $\Forb$ contains a single motif: $\Forb = \{f\}$. \\
+Then $k = 1$ is sufficient to guarantee strong connectivity.
+\begin{result}
+	$\forall f \in \Sigma^+$, $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected.
+\end{result}
+\begin{proof}
+	Let $w$ and $w'$ be two words in $\Lang{\{f\}}$ (of length $n$). \\
+	As $f \neq \epsilon$, $f$ can be written letter by letter as follows: $f = f_1 ... f_{|f|}$. \\
+	Since $|\Sigma| \geq 2$, let $a \in \Sigma$ such that $a \neq f_1$. \\
+	We show that there is a path from $w$ to $a^n$. \\
+	To do so, from left to right we replace each letter in $w$ by $a$ (or keep it the same if already an $a$). \\
+	Formally, from $w = w_1 ... w_n$ we define the sequence $(u_i)_{0 \leq i \leq n}$ of intermediate words:
+	$$ \forall 0 \leq i \leq n, u_i = a^i w_{i+1} ... w_n.$$
+	Then:
+	\begin{itemize}
+		\item $\forall 0 \leq i \leq n - 1, H(u_i, u_{i+1}) \leq 1,$
+		\item for every $i$ in $[1..n]$ we must prove that $u_i$ is in $\Lang{\{f\}}$. By contradiction, suppose that $f$ appears in a $u_i$. Let $j$ be the position in $u_i$ of the leftmost letter of this occurrence of $f$.
 		\begin{itemize}
-			\item $\forall 0 \leq i \leq n - 1, H(u_i, u_{i+1}) \leq 1,$
-			\item for every $i$ in $[1..n]$ we must prove that $u_i$ is in $\Lang{\{f\}}$. By contradiction, suppose that $f$ appears in a $u_i$. Let $j$ be the position in $u_i$ of the leftmost letter of this occurrence of $f$.
-			\begin{itemize}
-				\item if $j \leq i:$ then the leftmost letter of $f$ would be $a$, which is not by definition of $a$.
-				\item if $j > i:$ then this occurrence of $f$ would be a factor of $w$, which it cannot be since $w \in \Lang{\{f\}}.$
-			\end{itemize}
-			Contradiction. Hence every $u_i$ is in $\Lang{\{f\}}$.
+			\item if $j \leq i:$ then the leftmost letter of $f$ would be $a$, which is not by definition of $a$.
+			\item if $j > i:$ then this occurrence of $f$ would be a factor of $w$, which it cannot be since $w \in \Lang{\{f\}}.$
 		\end{itemize}
-		This proves that there is a path from $w$ to $a^n$ with $\delta_1$ as the neighborhood function. \\
-		The same can be done to obtain a path from $w'$ to $a^n$. \\
-		Finally, since $\delta_1$ is symmetric this gives a path from $w$ to $w'$ and vice-versa.	
-	\end{proof}
-	
-	In addition to show that $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected, this proof gives us $2n$ as an upper bound to the diameter of $G$.
-	
-	We could have tried to prove Result 1 by induction on $H(w,w')$ instead. But it is unclear to what extent such an induction would be feasible (at least for now). Consider the following example with $\Sigma = \{A,U\}:$
-	$$ \Forb = \{AUA\}, u=AAAA, v=AUUA.$$
-	There is no way to replace one non-extremal $A$ of $u$ with $U$ without getting an occurrence of $AUA$. Hence there is no path from $u$ to $v$ in $G$ with decreasing Hamming distance, even though $u$ and $v$ are connected according to Result 1. The same idea gives counter-examples of arbitrary Hamming distance:
-	$$\forall i \in \PosInt, i \geq 2, \text{with: }\Forb = \{AUA\}, u_i=A^{i+2}, v_i=A U^i A,$$
-	$$\text{then: } H(u_i,v_i) = i.$$
-	These examples heavily rely on the fact that $|\Sigma|=2$. There might be a way to get around this issue when $|\Sigma| \geq 3$ and find paths with non-increasing Hamming distance, but this would have to be looked at.\ypi{Another possible direction is to choose another candidate for an intermediate word, \emph{i.e.} instead of showing connectivity as $$w \leftrightarrow A^n \leftrightarrow w',$$ find $u(w,w')$, depending on $w$ and $w'$ such that $$w \leftrightarrow u(w,w') \leftrightarrow w'$$}
-	
-	\subsubsection{Two or more motifs}
-	
-	The idea from the proof of Result 1 could be used again to treat the cases when there is an available letter to do the same trick.
-	\begin{result}
-		Let $F = \{f_1,...,f_k\}$ be the set of forbidden motifs.
-		\begin{itemize}
-			\item If there exists $a \in \Sigma$ such that $f_1 \neq a, \forall f\in \mathcal{F}$, then $G = (\Lang{\Forb}, \delta_1)$ is strongly connected.
-			\item Same result if there exists $a \in \Sigma$ such that $f_{|f|-1} \neq a, \forall f\in \mathcal{F}$.
-		\end{itemize}
-	\end{result}
+	Contradiction. Hence every $u_i$ is in $\Lang{\{f\}}$.
+	\end{itemize}
+	This proves that there is a path from $w$ to $a^n$ with $\delta_1$ as the neighborhood function. \\
+	The same can be done to obtain a path from $w'$ to $a^n$. \\
+	Finally, since $\delta_1$ is symmetric this gives a path from $w$ to $w'$ and vice-versa.	
+\end{proof}
+
+In addition to show that $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected, this proof gives us $2n$ as an upper bound to the diameter of $G$.
+
+We could have tried to prove Result 1 by induction on $H(w,w')$ instead. But it is unclear to what extent such an induction would be feasible (at least for now). Consider the following example with $\Sigma = \{A,U\}:$
+$$ \Forb = \{AUA\}, u=AAAA, v=AUUA.$$
+There is no way to replace one non-extremal $A$ of $u$ with $U$ without getting an occurrence of $AUA$. Hence there is no path from $u$ to $v$ in $G$ with decreasing Hamming distance, even though $u$ and $v$ are connected according to Result 1. The same idea gives counter-examples of arbitrary Hamming distance:
+$$\forall i \in \PosInt, i \geq 2, \text{with: }\Forb = \{AUA\}, u_i=A^{i+2}, v_i=A U^i A,$$
+$$\text{then: } H(u_i,v_i) = i.$$
+These examples heavily rely on the fact that $|\Sigma|=2$. There might be a way to get around this issue when $|\Sigma| \geq 3$ and find paths with non-increasing Hamming distance, but this would have to be looked at.\ypi{Another possible direction is to choose another candidate for an intermediate word, \emph{i.e.} instead of showing connectivity as $$w \leftrightarrow A^n \leftrightarrow w',$$ find $u(w,w')$, depending on $w$ and $w'$ such that $$w \leftrightarrow u(w,w') \leftrightarrow w'$$}
+
+\subsubsection{Two or more motifs}
+
+The idea from the proof of Result 1 could be used again to treat the cases when there is an available letter to do the same trick.
+\begin{result}
+	Let $F$ be the set of forbidden motifs.
+	\begin{itemize}
+		\item If there exists $a \in \Sigma$ such that: $\forall f\in \mathcal{F}, f[1] \neq a, $, then $G = (\LFn, \delta_1)$ is strongly connected.
+		\item Same result if there exists $a \in \Sigma$ such that: $\forall f\in \mathcal{F}, f[|f|] \neq a$.
+	\end{itemize}
+\end{result}
+\noindent
+This tells us that we need at least $|\Sigma|$ forbidden motifs to obtain a disconnected graph with $\delta_1$. Indeed if there are less than $|\Sigma|$ motifs, then we know that at least one letter is not the first letter of any forbidden motif.
+
+\begin{corollary}
+	If $|\Forb| < |\Sigma|$, then $G = (\LFn, \delta_1)$ is strongly connected.
+\end{corollary}
+\noindent
+An example with $|\Sigma|$ words that gives a disconnected graph with $\delta_1$ is the following:
+$$with: \Sigma = \{a_1, a_2,...,a_k\}, let: \Forb = \{a_1 a_2, a_2 a_1, a_3,...,a_k\}.$$
+Then the only two allowed words are $a_1^n$ and $a_2^n$, and there is no way to go from one word to the other. \\
+
+\noindent
+\underline{\textbf{Case $k = n-1$, $|\Sigma| = 2$}} \\
+
+\begin{result}
+	If $k = n-1$ and $|\Sigma| = 2$, if $u$ and $v$ are disconnected in $G = (\LFn, \delta_{n-1})$, then:
+	\begin{itemize}
+		\item $u$ is the opposite word of $v$ in $\Sigma^n$,
+		\item $\LFn = \{u,v\}$.
+	\end{itemize}
+\end{result}
+\begin{proof}
 	\noindent
-	This tells us that we need at least $|\Sigma|$ forbidden motifs to obtain a disconnected graph with $\delta_1$. Indeed if there are less than $|\Sigma|$ motifs, then we know that at least one letter is not the first letter of any forbidden motif.
-	
-	\begin{corollary}
-		If $|\Forb| < |\Sigma|$, then $G = (\Lang{\Forb}, \delta_1)$ is strongly connected.
-	\end{corollary}
-	\noindent
-	An example with $|\Sigma|$ words that gives a disconnected graph with $\delta_1$ is the following:
-	$$With: \Sigma = \{a_1, a_2,...,a_k\}, let: \Forb = \{a_1 a_2, a_2 a_1, a_3,...,a_k\}.$$
-	Then the only two allowed words are $a_1^n$ and $a_2^n$, and there is no way to go from one word to the other.
-	
+	\begin{itemize}
+		\item With $|\Sigma| = 2$ the only word in $\Sigma^n$ at Hamming distance greater than $n-1$ from $u$ is its opposite word.
+		\item By contradiction: if any other word $w$ were in $\LFn$, then $w$ would be a $\delta_{n-1}$-neighbor of both $u$ and $v$, and thus $u$ and $v$ would be connected.
+	\end{itemize}
+\end{proof}
+
+Thus in this case the only possible disconnected graph is with two nodes that are opposite sequences, which is very restricitve. Nevertheless, characterizing the sets $\Forb$ that give such a graph still looks complicated. \\
+A convenient way to represent the problem is to use de Bruijn graphs.
+
+\subsection{Algorithmic aspects}
+
+
 \end{document}
