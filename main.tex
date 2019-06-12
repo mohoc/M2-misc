@@ -4,6 +4,8 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{MnSymbol}
+
 
 \usepackage{todonotes}
 \newcommand{\yp}[1]{\todo[color=blue!20]{\sf Yann: #1}}
@@ -18,10 +20,14 @@
 \maketitle
 
 \newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{remark}[theorem]{Remark}
 \newtheorem{result}[theorem]{Result}
+\newtheorem{example}[theorem]{Example}
+\newtheorem*{idea*}{Idea}
 
 
 
@@ -31,8 +37,11 @@
 \newcommand{\ForbEqv}{\widetilde{\Forb}}
 \newcommand{\Lang}[1]{\mathcal{L}_{#1}}
 \newcommand{\LFn}{\Lang{\Forb, n}}
+\newcommand{\Compl}[1]{\complement {#1}}
 \newcommand{\Hamming}[2]{H(#1,#2)}
 \newcommand{\EqDef}{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+\newcommand{\DeBruijn}[1]{\mathcal{DB}_{#1}}
+	
 
 \section{Introduction}
 {\it A faire par Maher}
@@ -48,12 +57,9 @@ Let $H(w,w')$ be the Hamming distance between two words $w$, $w'$ in $\Sigma^n$.
 
 \noindent
 Let $m(\Forb)$ $\EqDef$ $max_{f in \Forb} |f|$. \\
-We assume that $n \geq m(\Forb)$. (Otherwise some forbidden motifs would never be problematic).\\
+\textbf{We assume that $n \geq m(\Forb)$.} (Otherwise some forbidden motifs would never be problematic).\\
 Hence any forbidden motif $f$ in $\Forb$ of length $l < m(\Forb)$ is equivalent to the set: $\bigcup_{i=0}^{n-l} \Sigma^i f \Sigma^{n-l-i}$ of forbidden motifs, all of legnth $m(F)$. \\
-Thus we define $\ForbEqv$ the set of forbidden motifs - all of length $m(\Forb)$ - equivalent to $\Forb$. \\
-
-\noindent
-Let (TODO: de Bruijn graph)
+Thus we define $\ForbEqv$ the set of forbidden motifs - all of length $m(\Forb)$ - equivalent to $\Forb$.
 
 \subsection*{General problem}
 
@@ -73,15 +79,18 @@ With $k = n$, any $w \in \LFn$ can be changed into any other $w' \in \LFn$ in on
 \subsubsection*{General problem with the $k$-Hamming neighborhood}
 
 Input: $n \geq 2$, $\Forb$ a set of forbidden motifs \\
-Question: the minimal $k \in \PosInt$ such that the graph $G = (\LFn, \delta_k)$ is strongly connected.
+Question: the minimal $k \in \PosInt$ such that the graph $G_{\Forb, n, k} \EqDef (\LFn, \delta_k)$ is strongly connected.
 
+\begin{remark}
+	Since $\delta_k$ is symmetric for any $1 \leq k \leq n$, $G_{\Forb, n, k}$ is connected iff it is strongly connected. Thus we will use "connected" and "strongly connected" interchangeably when considering $k$-Hamming neighborhoods.
+\end{remark}
 
 \subsubsection{One motif}
 
 Consider the case where $\Forb$ contains a single motif: $\Forb = \{f\}$. \\
 Then $k = 1$ is sufficient to guarantee strong connectivity.
 \begin{result}
-	$\forall f \in \Sigma^+$, $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected.
+	$\forall f \in \Sigma^+$, $G_{\{f\}, n, 1}$ is strongly connected.
 \end{result}
 \begin{proof}
 	Let $w$ and $w'$ be two words in $\Lang{\{f\}}$ (of length $n$). \\
@@ -108,12 +117,18 @@ Then $k = 1$ is sufficient to guarantee strong connectivity.
 
 In addition to show that $G = (\Lang{\{f\}}, \delta_1)$ is strongly connected, this proof gives us $2n$ as an upper bound to the diameter of $G$.
 
-We could have tried to prove Result 1 by induction on $H(w,w')$ instead. But it is unclear to what extent such an induction would be feasible (at least for now). Consider the following example with $\Sigma = \{A,U\}:$
-$$ \Forb = \{AUA\}, u=AAAA, v=AUUA.$$
-There is no way to replace one non-extremal $A$ of $u$ with $U$ without getting an occurrence of $AUA$. Hence there is no path from $u$ to $v$ in $G$ with decreasing Hamming distance, even though $u$ and $v$ are connected according to Result 1. The same idea gives counter-examples of arbitrary Hamming distance:
-$$\forall i \in \PosInt, i \geq 2, \text{with: }\Forb = \{AUA\}, u_i=A^{i+2}, v_i=A U^i A,$$
-$$\text{then: } H(u_i,v_i) = i.$$
-These examples heavily rely on the fact that $|\Sigma|=2$. There might be a way to get around this issue when $|\Sigma| \geq 3$ and find paths with non-increasing Hamming distance, but this would have to be looked at.\ypi{Another possible direction is to choose another candidate for an intermediate word, \emph{i.e.} instead of showing connectivity as $$w \leftrightarrow A^n \leftrightarrow w',$$ find $u(w,w')$, depending on $w$ and $w'$ such that $$w \leftrightarrow u(w,w') \leftrightarrow w'$$}
+\begin{remark}
+	We could have tried to prove Result 1 by induction on $H(w,w')$ instead. But it is unclear to what extent such an induction would be feasible (at least for now). Consider the following example with $\Sigma = \{A,U\}:$
+	$$ \Forb = \{AUA\}, u=AAAA, v=AUUA.$$
+	There is no way to replace one non-extremal $A$ of $u$ with $U$ without getting an occurrence of $AUA$. Hence there is no path from $u$ to $v$ in $G$ with decreasing Hamming distance, even though $u$ and $v$ are connected according to Result 1. The same idea gives counter-examples of arbitrary Hamming distance:
+	$$\forall i \in \PosInt, i \geq 2, \text{with: }\Forb = \{AUA\}, u_i=A^{i+2}, v_i=A U^i A,$$
+	$$\text{then: } H(u_i,v_i) = i.$$
+	These examples heavily rely on the fact that $|\Sigma|=2$. There might be a way to get around this issue when $|\Sigma| \geq 3$ and find paths with non-increasing Hamming distance, but this would have to be looked at.\ypi{Another possible direction is to choose another candidate for an intermediate word, \emph{i.e.} instead of showing connectivity as $$w \leftrightarrow A^n \leftrightarrow w',$$ find $u(w,w')$, depending on $w$ and $w'$ such that $$w \leftrightarrow u(w,w') \leftrightarrow w'$$}
+\end{remark}
+
+\begin{idea*}
+	Give an arbitrary order on the letters in $\Sigma$ and take as the representative of each connected component their smallest element w.r.t the lexical order?
+\end{idea*}
 
 \subsubsection{Two or more motifs}
 
@@ -129,7 +144,7 @@ The idea from the proof of Result 1 could be used again to treat the cases when 
 This tells us that we need at least $|\Sigma|$ forbidden motifs to obtain a disconnected graph with $\delta_1$. Indeed if there are less than $|\Sigma|$ motifs, then we know that at least one letter is not the first letter of any forbidden motif.
 
 \begin{corollary}
-	If $|\Forb| < |\Sigma|$, then $G = (\LFn, \delta_1)$ is strongly connected.
+	If $|\Forb| < |\Sigma|$, then $G_{\Forb, n, 1}$ is strongly connected.
 \end{corollary}
 \noindent
 An example with $|\Sigma|$ words that gives a disconnected graph with $\delta_1$ is the following:
@@ -140,22 +155,141 @@ Then the only two allowed words are $a_1^n$ and $a_2^n$, and there is no way to 
 \underline{\textbf{Case $k = n-1$, $|\Sigma| = 2$}} \\
 
 \begin{result}
-	If $k = n-1$ and $|\Sigma| = 2$, if $u$ and $v$ are disconnected in $G = (\LFn, \delta_{n-1})$, then:
+	If $k = n-1$ and $|\Sigma| = 2$, then: \\
+	$u$ and $v$ are disconnected in $G = (\LFn, \delta_{n-1})$ iff:
 	\begin{itemize}
 		\item $u$ is the opposite word of $v$ in $\Sigma^n$,
 		\item $\LFn = \{u,v\}$.
 	\end{itemize}
 \end{result}
 \begin{proof}
-	\noindent
+
+	$(\Leftarrow)$ As $u$ and $v$ are opposite, $\Hamming{u}{v} = n$. Hence $u$ and $v$ are not neighbors and they are the only elements in $G$. \\
+	
+	$(\Rightarrow)$
 	\begin{itemize}
 		\item With $|\Sigma| = 2$ the only word in $\Sigma^n$ at Hamming distance greater than $n-1$ from $u$ is its opposite word.
 		\item By contradiction: if any other word $w$ were in $\LFn$, then $w$ would be a $\delta_{n-1}$-neighbor of both $u$ and $v$, and thus $u$ and $v$ would be connected.
 	\end{itemize}
 \end{proof}
 
-Thus in this case the only possible disconnected graph is with two nodes that are opposite sequences, which is very restricitve. Nevertheless, characterizing the sets $\Forb$ that give such a graph still looks complicated. \\
-A convenient way to represent the problem is to use de Bruijn graphs.
+Then the only possible disconnected graph here is with two nodes that are opposite sequences, which is very restrictive. This makes for a simple example to study the impact of $\Forb$ on the strong connectivity of $G_{\Forb, n, n-1}$.
+
+\noindent
+--------------------------------
+
+\begin{proposition}
+	If $P_1$ and $P_2$ are in $\Lang{\Forb, |P_1|}$ and disconnected in $G_{\Forb, |P_1|, k}$ (for some $k \in [1..|P_1|]$), then:
+	$\forall (S_1, S_2)$ couple of words of the same length: ($P_1 S_1$ and $P_2 S_2$ are in $\Lang{\Forb, |P_1|}$) $\Rightarrow$ ($P_1 S_1$ and $P_2 S_2$ are disconnected in $G_{\Forb, |P_1 S_1|, k}$).
+\end{proposition}
+\noindent
+In other words, if we find two words $P_1, P_2$ that are disconnected in $G_{\Forb, i, k}$ for some $i \in \PosInt$, then any couple of words $P_1 S_1, P_2 S_2$ in $G_{\Forb, j, k}$ (for some $j > i$) that have them as their prefixes are disconnected as well.
+
+\begin{proof}
+	Let $P_1$ and $P_2$ be two words in $\Lang{\Forb, |P_1|}$ that are disconnected in $G_{\Forb, |P_1|, k}$. \\
+	By contradiction: if there exist $S_1$, $S_2$ such that $P_1 S_1$ and $P_2 S_2$ are connected in $G_{\Forb, |P_1 S_1|, k}$, \\
+	then there is a path $(P_1 S_1 = u_0) \rightarrow u_1 \rightarrow [...] \rightarrow u_i \rightarrow (u_{i+1} = P_2 S_2)$ in $G_{\Forb, |P_1 S_1|, k}$. \\
+	We know then that: $\forall 0 \leq j \leq i, \Hamming{u_j}{u_{j+1}} \leq k$. \\
+	For $0 \leq j \leq i+1$ let $P'_j$ be the prefix of length $|P_1|$ in $u_j$. \\
+	Since we take the prefixes, we still have: $\forall 0 \leq j \leq i, \Hamming{P'_j}{P'_{j+1}} \leq k$. \\
+	Hence $(P_1 = P'_0) \rightarrow P'_1 \rightarrow [...] \rightarrow P'_i \rightarrow (P'_{i+1} = P_2)$ is a valid path in $G_{\Forb, |P_1|, k}$. \\
+	Hence $P_1$ and $P_2$ would be connected in $G_{\Forb, |P_1|, k}$. \\
+	Contradiction.
+\end{proof}
+
+\begin{idea*}
+	Use a De Bruijn graph to know when a word is a prefix of arbitrary long allowed words. See $Remark$ $11.$ .
+\end{idea*}
+
+\subsection{De Bruijn graphs}
+
+\subsubsection{Properties}
+
+\begin{definition}
+	Given $\Forb$, we define $\DeBruijn{\Forb}$ the De Bruijn graph of $\Forb$ the following way:
+	\begin{itemize}
+		\item Vertices: $\Compl{\ForbEqv}$ the allowed substrings of length $m(\Forb)$.
+		\item Edges: if $u \in \Sigma^{m(\Forb)-1}$, if $a,b \in \Sigma$, then: there is an edge from $au$ to $ub$ iff $au$ and $ub$ are both in $\Compl{\ForbEqv}$.
+	\end{itemize}
+\end{definition}
+
+\begin{proposition}
+	Let $w = w_1...w_n$ be a word of length $n$. Then: 
+	\begin{itemize}
+		\item[] $w \in \LFn$ iff $w_1...w_{m(F)} \rightarrow w_2...w_{m(F) + 1} \rightarrow [...] \rightarrow w_{n - m(F) + 1}...w_n$ is a valid path in $\DeBruijn{\Forb}$.
+	\end{itemize}
+\end{proposition}
+\begin{proof}
+	$w$ is an allowed word iff every factor of length $m(\Forb)$ in $w$ is allowed.
+\end{proof}
+
+\begin{remark}
+	There are arbitrarily long allowed words iff there is a cycle in $\DeBruijn{\Forb}$.
+\end{remark}
+
+\begin{result}
+	Let $u_1 \rightarrow [...] \rightarrow u_i$ be a path in $\DeBruijn{\Forb}$ ($i \geq 3$). \\
+	If $u_i$ is a neighbor of $u_1$, then ($u_2, [...], u_{i-1}$) is a cycle in $\DeBruijn{\Forb}$.
+\end{result}
+\noindent
+In other words: if there is a shortcut to a path in $\DeBruijn{\Forb}$, then the intermediate elements form a cycle.
+\begin{proof}
+	Since $u_i$ is a a neighbor of $u_1$ in $\DeBruijn{\Forb}$, we can write: $u_1 = av$ and $u_i = vb$ for some $v \in \Sigma^{m(\Forb) - 1}$ and $a, b \in \Sigma$. \\
+	But then we know as well that: $u_2 = vc$ and $u_{i-1} = dv$ for some $a, b \in \Sigma$. \\
+	Hence $u_2$ is a neighbor of $u_{i-1}$ and ($u_2, [...], u_{i-1}$) forms a cycle in $\DeBruijn{\Forb}$.
+\end{proof}
+
+\begin{idea*}
+	How to interpret Hamming edits with paths in $\DeBruijn{\Forb}$?
+\end{idea*}
+
+\begin{definition}
+	We define $\DeBruijn{\Forb, n}$ the graph obtained by removing all the connected components in $\DeBruijn{\Forb}$ that do not encode any word of length $n$.
+\end{definition}
+\noindent
+The goal of this notion is to only keep the meaningful part in $\DeBruijn{\Forb}$ that generates the allowed words of length $n$. This is the same as removing all the connected components that have no path of length $\geq n - m(\Forb)$.
+
+\begin{remark}
+	For any $n \geq m(\Forb)$, $\DeBruijn{\Forb}$ and $\DeBruijn{\Forb, n}$ have exactly the same paths of length $n - m(\Forb)$.
+\end{remark}
+
+\begin{lemma}
+	If we follow the same sequence of letters $a_1, a_2, [...], a_j$ from two distinct sequences $u, v$ in $\DeBruijn{\Forb}$, if $j \geq m(\Forb)$, then the two subsequent paths have merged at some index $i \leq m(\Forb)$.
+\end{lemma}
+\begin{proof}
+	After $m(\Forb)$ steps the resulting word is $a_1...a_{m(\Forb)}$ in both paths, so the paths merged either at index $m(\Forb)$ or at a smaller index.
+\end{proof}
+
+\subsubsection{Applications}
+
+\noindent
+\underline{\textbf{Back to the case $k = n-1$, $|\Sigma| = 2$}} \\
+
+\begin{result}
+	With $|\Sigma| = 2$ (for instance $\Sigma = \{A, C\}$): $G_{\Forb, n, n-1}$ is disconnected iff $\DeBruijn{\Forb, n}$ is either:
+	\begin{itemize}
+		\item[(i)] A...A$\lcirclearrowleft$, C...C$\lcirclearrowleft$
+		\item[(ii)] ACA... $\leftrightarrow$ CAC...
+		\item[(iii)] two "opposite" paths of length $n - m(\Forb)$ with no connection: $u_1 \rightarrow [...] \rightarrow u_{n-m(\Forb)+1}$, $\overline{u_1} \rightarrow [...] \rightarrow \overline{u_{n-m(\Forb)+1}}$, \\
+		where $\overline{u_i}$ is the opposite word of $u_i$.
+	\end{itemize}
+\end{result}
+\begin{proof}
+	$(\Leftarrow)$ All the three cases for $\DeBruijn{\Forb, n}$ imply that there are exactly two paths of length $n - m(\Forb)$ in $\DeBruijn{\Forb}$. By $Proposition$ $10.$, we deduce that there are only two words in $\LFn$ and they are opposite, which by $Result$ $7.$ means that $G_{\Forb, n, n-1}$ is disconnected. \\
+	
+	$(\Rightarrow)$ We know from $Result$ $7.$ that the only way to have $G_{\Forb, n, n-1}$ disconnected is to  have exactly two vertices and that they are opposite to each other. Using $Proposition$ $9.$, this means that we must exactly have two paths of length $n - m(\Forb)$ in $\DeBruijn{\Forb}$. \\
+	Now we show that $\DeBruijn{\Forb, n}$ can only be of one the three proposed forms.
+	\begin{itemize}
+		\item If there is a 1-cycle in $\DeBruijn{\Forb, n}$: \\
+		then this 1-cycle is either A...A$\lcirclearrowleft$ or C...C$\lcirclearrowleft$. In any case the other one must be included as well in order to include the path for the opposite word. There are already two paths of length $n - m(\Forb)$ in the graph [A...A$\lcirclearrowleft$, C...C$\lcirclearrowleft$] and appending any element to these components would add another path of length $n - m(\Forb)$, which we do not want. Thus the only graph $\DeBruijn{\Forb, n}$ that can have a 1-cycle is [A...A$\lcirclearrowleft$, C...C$\lcirclearrowleft$], which is case (i).
+		\item If there is a 2-cycle in $\DeBruijn{\Forb, n}$: \\
+		then this 2-cycle can only be ACA... $\leftrightarrow$ CAC..., which already encodes two words of length $n$. Again, appending any element to this component would add another allowed word of length $n$, so the only graph $\DeBruijn{\Forb, n}$ that can have a 2-cycle is [ACA... $\leftrightarrow$ CAC...], which is case (ii).
+		\item If there is a (3+)-cycle in $\DeBruijn{\Forb, n}$: \\
+		then there would be at least three allowed words of length $n$ (we obtain them by starting from a different element of the cycle as the prefix and by going through the cycle). Since we only want two allowed words of length $n$, $\DeBruijn{\Forb, n}$ cannot have a (3+)-cycle.
+		\item If there is no cycle in $\DeBruijn{\Forb, n}$: \\
+		TODO
+	\end{itemize}
+\end{proof}
 
 \subsection{Algorithmic aspects}
 
