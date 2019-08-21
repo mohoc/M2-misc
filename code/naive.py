@@ -16,6 +16,13 @@ def is_substring(u, w):
             break
     return found_occurrence
 
+def is_substring_list(U, w):
+    """returns True iff an element u of U is a substring of w"""
+    for u in U:
+        if is_substring(u, w):
+            return True
+    return False
+
 def M(w, A):
     """returns M the minimal set of the forbidden substrings in w"""
     M = set()

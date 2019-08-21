@@ -1,106 +1,127 @@
-import list_op, my_rand, naive
+import ahocorasick_op, graph_build, graph_draw, graph_op, list_op, my_rand, naive
 import sys, random
+import tryalgo
 
-A = ["A","U","G","C"]
-n = 100
+import my_print
+
+A = ["A","C","U"]
+n = 10
 N = 1000
 name_stats = ["A", "n", "N", "mean_M", "max_M", "mean_minus", "mean_plus", "max_minus", "max_plus", 
                 "mean_max_length_M", "max_max_length_M", "mean_sum_length_M", "max_sum_length_M"]
 
-def rand_test(A, n, N, print_progression = True):
-    mean_minus = 0.0
-    mean_plus = 0.0
-    max_minus = 0
-    max_plus = 0
-    mean_M = 0.0
-    mean_max_length_M = 0.0
-    mean_sum_length_M = 0.0
-    max_M = 0
-    max_max_length_M = 0
-    max_sum_length_M = 0
-    
-    #thresholds to keep track of the computation progression
-    thresholds = [5*i for i in range(1,22)]
-    current_threshold_id = 0
-    current_threshold = thresholds[current_threshold_id]
-    for K in range(1, N+1):
-        #choose w1 at random and obtain w2 with a random mutation
-        w1 = my_rand.rand_word(n, A)
-        i = random.randint(0, n-1)
-        A2 = A.copy()
-        A2.remove(w1[i])
-        w2 = w1[:i] + random.choice(A2) + w1[i+1:]
-        #compute M for both words
-        M1 = naive.M(w1, A)
-        M2 = naive.M(w2, A)
-        #update stats
-        minus, plus = list_op.difference(M1,M2)
-        len_minus = len(minus)
-        len_plus = len(plus)
-        len_M1 = len(M1)
-        max_length_M1 = list_op.max_length(M1)
-        sum_length_M1 = list_op.sum_length(M1)
+#F = ["ACA", "CAAA", "AAC"]
 
-        mean_minus += len_minus
-        mean_plus += len_plus
-        max_minus = max(max_minus, len_minus)
-        max_plus = max(max_plus, len_plus)
-        mean_M += len_M1
-        mean_max_length_M += max_length_M1
-        mean_sum_length_M += sum_length_M1
-        max_M = max(max_M, len_M1)
-        max_max_length_M = max(max_max_length_M, max_length_M1)
-        max_sum_length_M = max(max_sum_length_M, sum_length_M1)
-        #update current "progression" threshold if necessary
-        if print_progression:
-            while K >= N * current_threshold // 100 and current_threshold <= 100:
-                print("|{}%".format(current_threshold), end="")
-                sys.stdout.flush()
-                current_threshold_id += 1
-                current_threshold = thresholds[current_threshold_id]
-    if print_progression:
-        print("")
-    mean_minus /= N
-    mean_plus /= N
-    mean_M /= N
-    mean_max_length_M /= N
-    mean_sum_length_M /= N
-    #store stats in a dictionary
-    d = {}
-    d["A"] = A
-    d["n"] = n
-    d["N"] = N
-    d["mean_M"] = mean_M
-    d["max_M"] = max_M
-    d["mean_minus"] = mean_minus
-    d["mean_plus"] = mean_plus
-    d["max_minus"] = max_minus
-    d["max_plus"] = max_plus
-    d["mean_max_length_M"] = mean_max_length_M
-    d["max_max_length_M"] = max_max_length_M
-    d["mean_sum_length_M"] = mean_sum_length_M
-    d["max_sum_length_M"] = max_sum_length_M
-    return d
+#2 simple cycles
+#F = ["AAAA", "CCCC", "AACC", "CCAA", "ACAC", "CACA", "ACCA", "CAAC"]
 
-def print_stats_verbose(d, name_stats):
-    for x in name_stats:
-        print("{}: {}".format(x,d[x]))
+#A'_F connected but DB_F is not
+#F = ["AACC", "ACAA", "ACAC", "CAA"]
+#F = ["AACC", "ACAA", "ACAC", "CAA", "AAAA"]
 
-def print_stats_line(d, name_stats):
-    for x in name_stats:
-        print("{}\t".format(d[x]), end="")
-    print("")
-    sys.stdout.flush()
+#Disconnecting DB_F with few forbidden motifs
+#F = ["AAAC", "CAAC", "CACC", "ACCA", "CCCA"]
 
-def print_stats_by_line_up_to_(K, A, N, name_stats):
-    for k in range(20, K+1):
-        d = rand_test(A, k, N, False)
-        print_stats_line(d, name_stats)
+#stabilizes at n=24
+#F = ['CACACC', 'CCCAAA', 'CCCCCC', 'CAACAC', 'CCACCC', 'ACACCC', 'ACCACA', 'ACACCA', 'AACCCA', 'AAACCC', 'AACCAC', 'ACAACA', 'CCCAAC', 'AACCAA', 'AACAAA', 'AACAAC', 'ACCACC', 'CCACAC', 'CAAAAC', 'CCCACC', 'ACAACC', 'AACACA', 'ACCAAA', 'AAAAAA', 'CAAACA']
 
-print_stats_by_line_up_to_(100, A, N, name_stats)
+#stabilizes at n=11
+#F = ['CAAAAC', 'ACAAAC', 'ACACAA', 'AACACA', 'CAACAC', 'CAAACA', 'ACAACC', 'CACCCC', 'CCACCA', 'AAAACC', 'ACACCA', 'CCCCAC', 'ACAACA', 'AACCAA', 'CCACAA', 'CCCAAC', 'AACAAA', 'ACACCC', 'ACAAAA', 'ACCACA', 'AACCCA', 'AAAAAC', 'AAAAAA', 'CACAAC', 'CCAACC', 'CAAACC', 'ACCCCA', 'ACCCCC', 'CACACA', 'CCAAAC', 'CCAAAA', 'ACCACC', 'AAAACA', 'AACCAC', 'CCCCAA', 'AAACCA', 'CAACCA', 'CAAAAA']
+
+#few motifs (0.2), #ccs increases with n (one big component, many much smaller components)
+#F = ['CAACCC', 'CCCCCA', 'CAACAC', 'CACAAA', 'CAAACA', 'CACACA', 'ACAACA', 'AAAAAC', 'AAACAA', 'CCACCA', 'AAAACA', 'CCACAA']
+
+#F = ["CAAAA", "AAAAC"]
+
+#F = ["AAA", "CAA", "ACAA", "ACACAA"]
+
+#2 cycles, #ccs increases, all ccs are tiny
+#F = ["CC", "AAA"]
+#F = ["AAA", "CAC"]
+
+#F = ["ACAC", "CCC"]
+
+#"barely" connected
+#F = ['CACA', 'ACCA', 'CCCA', 'ACAC', 'CACC', 'CAAA']
+
+#few motifs, 3 "big" ccs
+#F = ['AAAA', 'ACCA', 'CCCC']
+
+#m = list_op.max_length(F)
+
+"""
+m = 5
+F = my_rand.rand_list_fraction(m, A, .5)
+"""
+"""
+m = list_op.max_length(F)
+my_print.print_everything(A, F, 10)
+my_print.print_per_n_from(A, F, m)
+"""
+
+"""
+for i in range(1, 33):
+    my_print.find_all_non_c(A, 10, 5, i, verbose=False)
+"""
+
+#my_print.connexity_test(A, 3, 8, .05, 100, line_print=True, print_progression=True)
 
 
-#print_stats_verbose(rand_test(A, n, N), name_stats)
+
+for num in range(1,100):
+    my_print.connexity_test(A, 5, 10, num / 100, 100, line_print=True)
+    #my_print.connexity_test(A, 5, 10, num / 33, 1000, line_print=True)
+
+
+
+
+#my_print.connexity_test(A, 4, 9, .2, 1)
+
+
+"""
+#Test rand_list_fraction
+F = my_rand.rand_list_fraction(5, A, .2)
+print("F")
+print(len(F))
+print(F)
+"""
+
+#F = ['CACCA', 'AAACA', 'CAAAC', 'ACAAA', 'AAAAA', 'ACCCC', 'ACACA', 'CCAAC', 'ACACC', 'ACCAA', 'ACCCA', 'CCCAC', 'AACAA', 'ACAAC', 'AACAC', 'AAAAC']
+
+#F = ['ACCAA', 'CCCAC', 'AAACA', 'CAAAC', 'CACAC', 'CCACA', 'ACCCA', 'ACACA', 'CCCCC', 'CACCC', 'ACAAC', 'AAAAA', 'ACACC', 'ACCAC', 'AACCC', 'CAAAA']
+
+#F = ['CCAAA', 'AAACC', 'CAACA', 'ACCAC', 'AACCA', 'AACAA', 'CCCAC', 'CAAAA', 'ACAAC', 'ACAAA', 'CACAC', 'CCCCC', 'CCCCA', 'AACCC', 'AACAC', 'CAACC']
+"""
+#Test hammingGraph
+G = graph_build.hammmingGraph(A, F, n)
+nodes, edges = G
+print("G")
+print(len(nodes))
+print(nodes)
+graph_draw.draw_nx(graph_draw.listlist_to_nx(G))
+
+#Test deBruijn
+G = graph_build.deBruijn_inf(A, F)
+nodes, edges = G
+print("dB")
+print(nodes)
+print(edges)
+graph_draw.draw_nx(graph_draw.listlist_to_nx(G))
+"""
+"""
+#Test Aho-Corasick automaton
+#w = "AACACCACCACCACAAAAAACCCCCCACACACACCACCCCACACA"
+AC = ahocorasick_op.build_auto(F)
+nodes, edges, failure_links = AC.dump()
+print(nodes)
+print(edges)
+print(failure_links)
+"""
+
+#my_print.print_stats_by_line_up_to_(100, A, N, name_stats)
+
+
+#my_print.print_stats_verbose(rand_test(A, n, N), name_stats)
 
 """
 w1 = "acbcabcbc"

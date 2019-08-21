@@ -1,5 +1,16 @@
+def min_length(L):
+    assert L != []
+    max_val = len(L[0])
+    for x in L:
+        x_len = len(x)
+        if x_len < max_val:
+            max_val = x_len
+    return max_val
+
 def max_length(L):
-    max_val = 0
+    if L == []:
+        return 0
+    max_val = len(L[0])
     for x in L:
         x_len = len(x)
         if x_len > max_val:
@@ -40,3 +51,11 @@ def sum_length(L):
     for x in L:
         S += len(x)
     return S
+
+def remove_duplicates(L):
+    return list(set(L))
+
+def print_lengths(L):
+    for x in L:
+        print(len(x), end=" ")
+    print("")
